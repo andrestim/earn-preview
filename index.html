@@ -1,2 +1,82 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8" /><meta name="robots" content="noindex, nofollow" /><meta http-equiv="refresh" content="0; url=./earn.html" /><title>Earn</title></head><body></body></html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0b0c0e" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Partner Programmes</title>
+    <meta name="description" content="Partner programme concept pages: API Broker, Affiliate, Market Maker, OTC and Institutions." />
+    <script>
+      document.documentElement.classList.add('js');
+      // Theme before first paint, so the gold palette never flashes graphite
+      var params = new URLSearchParams(location.search);
+      // Partners pages default to gold, Institutions and the hub to silver; ?theme= overrides
+      // (keep in step with src/site/theme.ts)
+      var partners = { 'api-broker': 1, affiliate: 1, referral: 1 };
+      // The version parameters are off (COMPARE_VERSIONS in src/site/theme.ts): each page has one version
+      var compare = false;
+      var themeParam = compare ? params.get('theme') : null;
+      var gold = themeParam === 'gold' || (themeParam !== 'silver' && partners[params.get('program')] === 1);
+      if (gold) {
+        document.documentElement.dataset.theme = 'gold';
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0c0b09');
+      }
+      // Preload only the selected programme's hero. Widths mirror each config's <picture> sources
+      // and sizes exactly, so each viewport fetches one file. Keep in step with src/programs/.
+      (function () {
+        var heroes = {
+          'api-broker': [[1000, 1600, 2400], [800, 1200]],
+          affiliate: [[1000, 1536], [800, 980]],
+          'market-maker': [[1000, 1536, 2400], [800, 980, 1400]],
+          otc: [[1000, 1536], [800, 980]],
+          institution: [[1000, 1536], [800, 980]],
+          caas: [[1000, 1536], [800, 980]],
+          referral: [[1000, 1536], [800, 980]],
+        };
+        // Each programme's current X-ray pick (the first of XRAY in src/site/theme.ts)
+        var xray = {
+          'api-broker': 'bridgev4smooth',
+          affiliate: 'rowing2vertical',
+          'market-maker': 'turbofan',
+          otc: 'vaultclosed',
+          institution: 'lighthouse',
+          caas: 'rackv2',
+          referral: 'chessv3',
+        };
+        var id = params.get('program');
+        var kv = (compare && params.get('kv')) || 'xray';
+        // The hub, unknown ids and a named X-ray variant preload nothing
+        if (!heroes[id] || (kv !== 'xray' && kv !== 'photo')) return;
+        var photo = kv === 'photo';
+        // Gold-graded imagery sits in a gold/ folder (keep in step with src/site/theme.ts)
+        var dir = (photo ? '' : 'xray/') + (gold ? id + '/gold' : id);
+        var stem = photo ? 'hero' : 'xray-' + xray[id];
+        var set = function (name, widths) {
+          return widths.map(function (w) { return 'assets/' + dir + '/' + name + '-' + w + '.webp ' + w + 'w'; }).join(', ');
+        };
+        [
+          ['(min-width: 768px)', stem, photo ? heroes[id][0] : [1000, 1536, 2400], '(max-width: 1023px) 100vw, 82vw'],
+          ['(max-width: 767px)', stem + '-portrait', photo ? heroes[id][1] : [800, 980], '100vw'],
+        ].forEach(function (p) {
+          var l = document.createElement('link');
+          l.rel = 'preload';
+          l.as = 'image';
+          l.type = 'image/webp';
+          l.media = p[0];
+          l.setAttribute('imagesrcset', set(p[1], p[2]));
+          l.setAttribute('imagesizes', p[3]);
+          document.head.appendChild(l);
+        });
+      })();
+    </script>
+    <script type="module" crossorigin src="./assets/main-B3zwZkhQ.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/ProgramDetails-Ca0yVlGg.js">
+    <link rel="stylesheet" crossorigin href="./assets/ProgramDetails-B43H8198.css">
+    <link rel="stylesheet" crossorigin href="./assets/main-CyRS4mqJ.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
